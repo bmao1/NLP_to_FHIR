@@ -15,9 +15,10 @@ def buildResource(passinfo={}):
                                   {"url":"identifier","valueString": "Placeholder. record id or something similar. need to figure out a way to trace back to the original source"}
                                   ]
                      }]
-    
+    #add "id":"missing", as place holder
     if passinfo['resourcetype'] == 'MedicationStatement':
         resource = {"resourceType":"MedicationStatement",
+                    "id":"missing",
                     "status":"unknown",
                     "medicationCodeableConcept":{ 
                         "coding": passinfo['codelist'],
@@ -29,6 +30,7 @@ def buildResource(passinfo={}):
                     }
     elif passinfo['resourcetype'] == 'Observation':
         resource = {"resourceType":"Observation",
+                    "id":"missing",
                     "status":"unknown",
                     "code":{ 
                         "coding": passinfo['codelist'],
@@ -40,6 +42,7 @@ def buildResource(passinfo={}):
                     }
     elif passinfo['resourcetype'] == 'Condition':
         resource = {"resourceType":"Condition",
+                    "id":"missing",
                     "code":{ 
                         "coding": passinfo['codelist'],
                         "extension":[{
@@ -50,6 +53,7 @@ def buildResource(passinfo={}):
                     }
     elif passinfo['resourcetype'] == 'Procedure':
         resource = {"resourceType":"Procedure",
+                    "id":"missing",
                     "status":"unknown",
                     "code":{ 
                         "coding": passinfo['codelist'],
@@ -67,7 +71,7 @@ def buildResource(passinfo={}):
 def process_sentence(sent,uuid,encounterdate,outputpath):
     resource_map={'DiseaseDisorderMention':'Condition', 'SignSymptomMention':'Observation', 'MedicationMention':'MedicationStatement','ProcedureMention':'Procedure'}
 
-    url = 'http://localhost:8080/ctakes-web-rest/service/analyze'
+    url = 'http://10.0.0.219:8080/ctakes-web-rest/service/analyze'
     #url = 'http://localhost:8080/ctakes-web-rest/index.jsp'
     r = requests.post(url, data=sent.encode('utf-8'))
     for sem in resource_map:
