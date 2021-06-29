@@ -78,7 +78,8 @@ def process_sentence(sent,uuid,encounterdate,outputpath):
         try:
             add_cuis(r.json(), sem, uuid, encounterdate, outputpath)
         except:
-            print('pass')
+            # comment out "pass", some json may not contain all 4 sem types, printing out lots of "pass"
+            #print('pass')
             pass
     return
         
