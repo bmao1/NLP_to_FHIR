@@ -71,8 +71,8 @@ def buildResource(passinfo={}):
 def process_sentence(sent,uuid,encounterdate,outputpath):
     resource_map={'DiseaseDisorderMention':'Condition', 'SignSymptomMention':'Observation', 'MedicationMention':'MedicationStatement','ProcedureMention':'Procedure'}
 
-    url = 'http://10.0.0.219:8080/ctakes-web-rest/service/analyze'
-    #url = 'http://localhost:8080/ctakes-web-rest/index.jsp'
+    # replace ctakes container ip
+    url = 'http://localhost:8080/ctakes-web-rest/service/analyze'
     r = requests.post(url, data=sent.encode('utf-8'))
     for sem in resource_map:
         try:
@@ -109,7 +109,7 @@ def add_cuis(json, sem_type, uuid, encounterdate, outputpath):
                     'subject': 'Patient/' + uuid}
         resource = buildResource(passinfo)
         if len(resource) >0: 
-            with open(outputpath + resource_map[sem_type] +'.ndjson', 'a') as outfile:
+            with open(outputpath + '/' + resource_map[sem_type] +'.ndjson', 'a') as outfile:
                 outfile.write(str(resource))
                 outfile.write('\n')
     return

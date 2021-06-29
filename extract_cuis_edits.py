@@ -20,8 +20,9 @@ def main(args):
         sys.stderr.write('2 required arguments: <input dir> <output file>\n')
         sys.exit(-1)
 
-
-    for filename in glob(args[0] + '*.txt'):
+    inpath = re.sub(r'\/$', '', args[0])
+    outpath = re.sub(r'\/$', '', args[1])
+    for filename in glob(inpath + '/*.txt'):
         with open(filename) as f:
             content = f.readlines()
             content = [x.rstrip() for x in content] 
@@ -34,7 +35,7 @@ def main(args):
                 i=i+1
                 if re.match('\d{4}-\d{2}-\d{2}',line) or i==len(content) : #in date format for EOF
                     if len(text) >1:
-                        process_sentence(text,uuid,encounterdate,args[1])
+                        process_sentence(text,uuid,encounterdate,outpath)
                         text=""
                         encounterdate = line
                     else:
