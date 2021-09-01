@@ -110,7 +110,7 @@ def add_cuis(json, sem_type, uuid, encounterdate, outputpath):
                     'subject': 'Patient/' + uuid}
         resource = buildResource(passinfo)
         if len(resource) >0: 
-            with open(outputpath + '/' + resource_map[sem_type] +'.ndjson', 'a') as outfile:
+            with open(outputpath + resource_map[sem_type] +'.ndjson', 'a') as outfile:
                 outfile.write(str(resource))
                 outfile.write('\n')
     return

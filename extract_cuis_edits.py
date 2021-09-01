@@ -14,15 +14,17 @@ from ctakes_rest import process_sentence
 #sem_type_list =['DiseaseDisorderMention','SignSymptomMention','MedicationMention','ProcedureMention']
 #resource_map={'DiseaseDisorderMention':'Condition', 'SignSymptomMention':'Observation', 'MedicationMention':'MedicationStatement','ProcedureMention':'Procedure'}
 
+def trimUrl(url):
+    return re.sub(r'\/$', '', url)
 
 def main(args):
     if len(args) < 2:
         sys.stderr.write('2 required arguments: <input dir> <output file>\n')
         sys.exit(-1)
 
-    inpath = re.sub(r'\/$', '', args[0])
-    outpath = re.sub(r'\/$', '', args[1])
-    for filename in glob(inpath + '/*.txt'):
+    inpath = re.sub(r'\/$', '', trimUrl(args[0])) +"/"
+    outpath = re.sub(r'\/$', '', trimUrl(args[1])) +"/"
+    for filename in glob(inpath + '*.txt'):
         with open(filename) as f:
             content = f.readlines()
             content = [x.rstrip() for x in content] 
