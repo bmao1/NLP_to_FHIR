@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.6
 
 import requests
+import json
 
 
 def buildResource(passinfo={}):
@@ -69,7 +70,7 @@ def buildResource(passinfo={}):
 
 
 def process_sentence(sent,uuid,encounterdate,outputpath):
-    resource_map={'DiseaseDisorderMention':'Condition', 'SignSymptomMention':'Observation', 'MedicationMention':'MedicationStatement','ProcedureMention':'Procedure'}
+    resource_map={'DiseaseDisorderMention':'Condition','IdentifiedAnnotation':'Observation', 'SignSymptomMention':'Observation', 'MedicationMention':'MedicationStatement','ProcedureMention':'Procedure'}
 
     # replace ctakes container ip
     url = 'http://localhost:8080/ctakes-web-rest/service/analyze'
@@ -85,7 +86,7 @@ def process_sentence(sent,uuid,encounterdate,outputpath):
         
 
 def add_cuis(json, sem_type, uuid, encounterdate, outputpath):
-    resource_map={'DiseaseDisorderMention':'Condition', 'SignSymptomMention':'Observation', 'MedicationMention':'MedicationStatement','ProcedureMention':'Procedure'}
+    resource_map={'DiseaseDisorderMention':'Condition','IdentifiedAnnotation':'Observation', 'SignSymptomMention':'Observation', 'MedicationMention':'MedicationStatement','ProcedureMention':'Procedure'}
     for atts in json[sem_type]:
         code_list = []
         for cuiAtts in atts['conceptAttributes']:
@@ -111,7 +112,7 @@ def add_cuis(json, sem_type, uuid, encounterdate, outputpath):
         resource = buildResource(passinfo)
         if len(resource) >0: 
             with open(outputpath + resource_map[sem_type] +'.ndjson', 'a') as outfile:
-                outfile.write(str(resource))
+                outfile.write(json.dumps(resource))
                 outfile.write('\n')
     return
 
