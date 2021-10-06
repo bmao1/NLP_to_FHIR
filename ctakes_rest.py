@@ -3,6 +3,7 @@
 import requests
 import json
 
+resource_map={'DiseaseDisorderMention':'Condition','IdentifiedAnnotation':'Observation', 'SignSymptomMention':'Observation', 'MedicationMention':'MedicationStatement','ProcedureMention':'Procedure'}
 
 def buildResource(passinfo={}):
     resource ={}
@@ -70,8 +71,6 @@ def buildResource(passinfo={}):
 
 
 def process_sentence(sent,uuid,encounterdate,outputpath):
-    resource_map={'DiseaseDisorderMention':'Condition','IdentifiedAnnotation':'Observation', 'SignSymptomMention':'Observation', 'MedicationMention':'MedicationStatement','ProcedureMention':'Procedure'}
-
     # replace ctakes container ip
     url = 'http://localhost:8080/ctakes-web-rest/service/analyze'
     r = requests.post(url, data=sent.encode('utf-8'))
@@ -85,15 +84,16 @@ def process_sentence(sent,uuid,encounterdate,outputpath):
     return
         
 
-def add_cuis(json, sem_type, uuid, encounterdate, outputpath):
-    resource_map={'DiseaseDisorderMention':'Condition','IdentifiedAnnotation':'Observation', 'SignSymptomMention':'Observation', 'MedicationMention':'MedicationStatement','ProcedureMention':'Procedure'}
-    for atts in json[sem_type]:
+def add_cuis(nlp_json, sem_type, uuid, encounterdate, outputpath):
+    for atts in nlp_json[sem_type]:
         code_list = []
         for cuiAtts in atts['conceptAttributes']:
             if cuiAtts['codingScheme'] == 'SNOMEDCT_US':
                 system = 'http://snomed.info/sct'
             elif cuiAtts['codingScheme'] == 'RXNORM':
                 system = 'http://www.nlm.nih.gov/research/umls/rxnorm'
+            else :
+                system = cuiAtts['codingScheme']
             codeset = {"system": system, "code":cuiAtts['code'],"display":atts['text'],}
             code_list.append(codeset)
         
