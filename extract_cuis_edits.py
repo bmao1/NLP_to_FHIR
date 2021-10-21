@@ -10,6 +10,7 @@ from glob import glob
 import re
 import sys
 from ctakes_rest import process_sentence 
+from tqdm import tqdm
 
 #sem_type_list =['DiseaseDisorderMention','SignSymptomMention','MedicationMention','ProcedureMention']
 #resource_map={'DiseaseDisorderMention':'Condition', 'SignSymptomMention':'Observation', 'MedicationMention':'MedicationStatement','ProcedureMention':'Procedure'}
@@ -17,12 +18,16 @@ from ctakes_rest import process_sentence
 
 def main(args):
     if len(args) < 2:
-        sys.stderr.write('2 required arguments: <input dir> <output file>\n')
+        sys.stderr.write('2 required arguments: <input dir> <output file> [enable progress bar=true]\n')
         sys.exit(-1)
+
+    disable_progress = True
+    if len(args) == 3:
+        disable_progress = not (args[2].lower() == 'true')
 
     inpath = re.sub(r'\/$', '', args[0]) +"/"
     outpath = re.sub(r'\/$', '', args[1]) +"/"
-    for filename in glob(inpath + '*.txt'):
+    for filename in tqdm(glob(inpath + '*.txt'), disable=disable_progress):
         with open(filename) as f:
             content = f.readlines()
             content = [x.rstrip() for x in content] 

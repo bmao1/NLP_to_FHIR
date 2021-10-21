@@ -73,7 +73,7 @@ def buildResource(passinfo={}):
 def process_sentence(sent,uuid,encounterdate,outputpath):
     # replace ctakes container ip
     url = 'http://localhost:8080/ctakes-web-rest/service/analyze'
-    r = requests.post(url, data=sent.encode('utf-8'))
+    r = requests.post(url, data=sent)
     for sem in resource_map:
         try:
             add_cuis(r.json(), sem, uuid, encounterdate, outputpath)
