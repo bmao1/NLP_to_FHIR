@@ -2,6 +2,7 @@
 
 import requests
 import json
+from uuid import uuid4
 
 resource_map={'DiseaseDisorderMention':'Condition','IdentifiedAnnotation':'Observation', 'SignSymptomMention':'Observation', 'MedicationMention':'MedicationStatement','ProcedureMention':'Procedure'}
 
@@ -16,11 +17,14 @@ def buildResource(passinfo={}):
                                   {"url":"dateofauthorship","valueDate":passinfo['notesdate']},
                                   {"url":"identifier","valueString": "Placeholder. record id or something similar. need to figure out a way to trace back to the original source"}
                                   ]
-                     }]
-    #add "id":"missing", as place holder
+                     },
+                     {"url":"http://fhir-registry.smarthealthit.org/StructureDefinition/nlp-polarity",
+                     "valueInteger":passinfo['polarity']}]
+    
+    res_uuid = str(uuid4())
     if passinfo['resourcetype'] == 'MedicationStatement':
         resource = {"resourceType":"MedicationStatement",
-                    "id":"missing",
+                    "id":res_uuid,
                     "status":"unknown",
                     "medicationCodeableConcept":{ 
                         "coding": passinfo['codelist'],
@@ -32,7 +36,7 @@ def buildResource(passinfo={}):
                     }
     elif passinfo['resourcetype'] == 'Observation':
         resource = {"resourceType":"Observation",
-                    "id":"missing",
+                    "id":res_uuid,
                     "status":"unknown",
                     "code":{ 
                         "coding": passinfo['codelist'],
@@ -44,7 +48,7 @@ def buildResource(passinfo={}):
                     }
     elif passinfo['resourcetype'] == 'Condition':
         resource = {"resourceType":"Condition",
-                    "id":"missing",
+                    "id":res_uuid,
                     "code":{ 
                         "coding": passinfo['codelist'],
                         "extension":[{
@@ -55,7 +59,7 @@ def buildResource(passinfo={}):
                     }
     elif passinfo['resourcetype'] == 'Procedure':
         resource = {"resourceType":"Procedure",
-                    "id":"missing",
+                    "id":res_uuid,
                     "status":"unknown",
                     "code":{ 
                         "coding": passinfo['codelist'],
@@ -108,6 +112,7 @@ def add_cuis(nlp_json, sem_type, uuid, encounterdate, outputpath):
                     'end': atts['end'],
                     'notesdate': encounterdate,
                     'codelist': code_list,
+                    'polarity': atts['polarity'],
                     'subject': 'Patient/' + uuid}
         resource = buildResource(passinfo)
         if len(resource) >0: 
