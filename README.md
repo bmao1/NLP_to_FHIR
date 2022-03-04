@@ -7,7 +7,7 @@ Current version support medical terms in 4 categories, with one-to-one FHIR reso
   ProcedureMention => Procedure
 
 # Python
-python extract_cuis_edits.py ./fake_synthea_notes/ ./output/
+python extract_cuis_edits.py ./fake_data/notes ./fake_data/output
 Or use full path for the input folder and output folder 
 
 # Dependency
