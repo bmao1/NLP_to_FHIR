@@ -27,11 +27,11 @@ def buildResource(passinfo={}):
                     "id":res_uuid,
                     "status":"unknown",
                     "medicationCodeableConcept":{ 
-                        "coding": passinfo['codelist'],
-                        "extension":[{
-                            "url":"http://fhir-registry.smarthealthit.org/StructureDefinition/nlp-text-position",
-                            "extension": position_ext}]},
-                    "subject":[{"reference":passinfo['subject']}],
+                        "coding": passinfo['codelist']},
+                    "extension":[{
+                        "url":"http://fhir-registry.smarthealthit.org/StructureDefinition/nlp-text-position",
+                        "extension": position_ext}],
+                    "subject":{"reference":passinfo['subject']},
                     "modifierExtension":modifier_ext
                     }
     elif passinfo['resourcetype'] == 'Observation':
@@ -39,21 +39,24 @@ def buildResource(passinfo={}):
                     "id":res_uuid,
                     "status":"unknown",
                     "code":{ 
-                        "coding": passinfo['codelist'],
-                        "extension":[{
-                            "url":"http://fhir-registry.smarthealthit.org/StructureDefinition/nlp-text-position",
-                            "extension": position_ext}]},
+                        "coding": passinfo['codelist']},
+                    "extension":[{
+                        "url":"http://fhir-registry.smarthealthit.org/StructureDefinition/nlp-text-position",
+                        "extension": position_ext}],
                     "subject":{"reference":passinfo['subject']},
                     "modifierExtension":modifier_ext
                     }
     elif passinfo['resourcetype'] == 'Condition':
         resource = {"resourceType":"Condition",
                     "id":res_uuid,
+                    "clinicalStatus" : {"coding" : [{"system" : "http://terminology.hl7.org/CodeSystem/condition-clinical","code" : "active","display" : "Active"}]},
+                    "verificationStatus" : {"coding" : [{"system" : "http://terminology.hl7.org/CodeSystem/condition-ver-status","code" : "unconfirmed","display" : "Unconfirmed"}]},
+                    "category":[{"coding":[{"system": "http://terminology.hl7.org/CodeSystem/condition-category","code": "problem-list-item", "display" : "Problem List Item"}]}],
                     "code":{ 
-                        "coding": passinfo['codelist'],
-                        "extension":[{
-                            "url":"http://fhir-registry.smarthealthit.org/StructureDefinition/nlp-text-position",
-                            "extension": position_ext}]},
+                        "coding": passinfo['codelist']},
+                    "extension":[{
+                        "url":"http://fhir-registry.smarthealthit.org/StructureDefinition/nlp-text-position",
+                        "extension": position_ext}],
                     "subject":{"reference":passinfo['subject']},
                     "modifierExtension":modifier_ext
                     }
@@ -62,10 +65,10 @@ def buildResource(passinfo={}):
                     "id":res_uuid,
                     "status":"unknown",
                     "code":{ 
-                        "coding": passinfo['codelist'],
-                        "extension":[{
-                            "url":"http://fhir-registry.smarthealthit.org/StructureDefinition/nlp-text-position",
-                            "extension": position_ext}]},
+                        "coding": passinfo['codelist']},
+                    "extension":[{
+                        "url":"http://fhir-registry.smarthealthit.org/StructureDefinition/nlp-text-position",
+                        "extension": position_ext}],
                     "subject":{"reference":passinfo['subject']},
                     "modifierExtension":modifier_ext
                     }
@@ -78,18 +81,19 @@ def process_sentence(sent,uuid,encounterdate,outputpath):
     # replace ctakes container ip
     url = 'http://localhost:8080/ctakes-web-rest/service/analyze'
     r = requests.post(url, data=sent)
-    for sem in resource_map:
-        try:
-            add_cuis(r.json(), sem, uuid, encounterdate, outputpath)
-        except:
-            # comment out "pass", some json may not contain all 4 sem types, printing out lots of "pass"
-            #print('pass')
-            pass
+    try:
+        contentParse = r.json()
+        for sem in contentParse:
+            if sem in resource_map:
+                add_cuis(contentParse[sem], sem, uuid, encounterdate, outputpath)
+    except:
+        pass
+
     return
         
 
 def add_cuis(nlp_json, sem_type, uuid, encounterdate, outputpath):
-    for atts in nlp_json[sem_type]:
+    for atts in nlp_json:
         code_list = []
         for cuiAtts in atts['conceptAttributes']:
             if cuiAtts['codingScheme'] == 'SNOMEDCT_US':
