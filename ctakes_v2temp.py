@@ -183,13 +183,13 @@ def buildResource(passinfo={}):
 
 def process_sentence(parameters):
     # replace ctakes container ip
-    url = 'http://localhost:8080/ctakes-web-rest/service/analyze'
+    url = 'http://172.16.0.9:8080/ctakes-web-rest/service/analyze'
 
     try:
         r = requests.post(url, data=parameters["clinNotes"])
         contentParse = r.json()
     except:
-        logging.warning("Unable to process following text: " + parameters["clinNotes"])
+        logging.warning("cTAKES Unable to process text")
         return
     
     for sem in contentParse:
